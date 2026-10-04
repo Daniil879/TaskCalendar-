@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Календарь задач</string>
+    <string name="screen_main_title">Мои задачи</string>
+
+    <string name="add_task">Добавить задачу</string>
+    <string name="task_status_done">Выполнено</string>
+    <string name="task_status_pending">Не выполнено</string>
+    <string name="empty_list">Задач пока нет. Нажмите «+», чтобы добавить.</string>
+
+    <string name="screen_add_task_title">Новая задача</string>
+    <string name="form_title">Заголовок</string>
+    <string name="form_description">Описание</string>
+    <string name="form_date">Дата (дд.мм.гггг)</string>
+    <string name="form_time">Время (чч:мм)</string>
+    <string name="form_save">Сохранить</string>
+    <string name="form_error">Заполните хотя бы заголовок и дату</string>
+    <string name="task_saved">Задача сохранена</string>
+
+    <string name="screen_task_detail_title">Задача</string>
+    <string name="detail_id">ID задачи: %1$d</string>
+    <string name="detail_not_found">Задача не найдена</string>
+    <string name="back">Назад</string>
+</resources>
