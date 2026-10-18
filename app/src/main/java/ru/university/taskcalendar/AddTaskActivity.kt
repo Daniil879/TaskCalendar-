@@ -3,61 +3,44 @@ package ru.university.taskcalendar
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import ru.university.taskcalendar.data.AppDatabase
-import ru.university.taskcalendar.data.Task
-import ru.university.taskcalendar.data.TaskRepository
+import com.google.android.material.textfield.TextInputEditText
+import ru.university.taskcalendar.ui.TaskViewModel
 
 class AddTaskActivity : AppCompatActivity() {
 
-    private lateinit var repository: TaskRepository
+    private val viewModel: TaskViewModel by viewModels { TaskViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_task)
 
-        repository = TaskRepository(AppDatabase.getInstance(this).taskDao())
+        findViewById<MaterialToolbar>(R.id.toolbar)
+            .setNavigationOnClickListener { finish() }
 
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        val etTitle = findViewById<EditText>(R.id.etTitle)
-        val etDescription = findViewById<EditText>(R.id.etDescription)
-        val etDate = findViewById<EditText>(R.id.etDate)
-        val etTime = findViewById<EditText>(R.id.etTime)
+        val etTitle = findViewById<TextInputEditText>(R.id.etTitle)
+        val etDescription = findViewById<TextInputEditText>(R.id.etDescription)
+        val etDate = findViewById<TextInputEditText>(R.id.etDate)
+        val etTime = findViewById<TextInputEditText>(R.id.etTime)
         val btnSave = findViewById<Button>(R.id.btnSave)
 
         btnSave.setOnClickListener {
-            val title = etTitle.text.toString().trim()
-            val description = etDescription.text.toString().trim()
-            val date = etDate.text.toString().trim()
-            val time = etTime.text.toString().trim()
+            val title = etTitle.text?.toString()?.trim().orEmpty()
+            val description = etDescription.text?.toString()?.trim().orEmpty()
+            val date = etDate.text?.toString()?.trim().orEmpty()
+            val time = etTime.text?.toString()?.trim().orEmpty()
 
             if (TextUtils.isEmpty(title) || TextUtils.isEmpty(date)) {
                 Toast.makeText(this, R.string.form_error, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    repository.add(
-                        Task(
-                            title = title,
-                            description = description,
-                            date = date,
-                            time = time
-                        )
-                    )
-                }
-                Toast.makeText(this@AddTaskActivity, R.string.task_saved, Toast.LENGTH_SHORT).show()
+            btnSave.isEnabled = false
+            viewModel.addTask(title, description, date, time) {
+                Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show()
                 finish()
             }
         }

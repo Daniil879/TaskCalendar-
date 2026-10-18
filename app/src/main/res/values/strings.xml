@@ -20,5 +20,8 @@
     <string name="screen_task_detail_title">Задача</string>
     <string name="detail_id">ID задачи: %1$d</string>
     <string name="detail_not_found">Задача не найдена</string>
+    <string name="detail_mark_done">Отметить выполненной</string>
+    <string name="detail_mark_pending">Вернуть в работу</string>
+    <string name="detail_delete">Удалить</string>
     <string name="back">Назад</string>
 </resources>
