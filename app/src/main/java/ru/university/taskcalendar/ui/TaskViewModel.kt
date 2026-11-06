@@ -1,4 +1,5 @@
 package ru.university.taskcalendar.ui
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,9 @@ import kotlinx.coroutines.withContext
 import ru.university.taskcalendar.TaskCalendarApp
 import ru.university.taskcalendar.data.Task
 import ru.university.taskcalendar.data.TaskRepository
+
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
+
     val tasks: StateFlow<List<Task>> = repository.allTasks
         .stateIn(
             scope = viewModelScope,
@@ -27,6 +30,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     val currentTask: StateFlow<Task?> = _currentTask.asStateFlow()
 
     private var loadedTaskId: Long? = null
+
     fun loadTask(id: Long) {
         if (loadedTaskId == id) return
         loadedTaskId = id
@@ -44,7 +48,14 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     ) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                repository.add(Task(title = title, description = description, date = date, time = time))
+                repository.add(
+                    Task(
+                        title = title,
+                        description = description,
+                        date = date,
+                        time = time
+                    )
+                )
             }
             onSaved()
         }
@@ -73,7 +84,9 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         val newValue = !task.isDone
         viewModelScope.launch {
             withContext(Dispatchers.IO) { repository.setDone(task.id, newValue) }
-            if (loadedTaskId == task.id) _currentTask.value = task.copy(isDone = newValue)
+            if (loadedTaskId == task.id) {
+                _currentTask.value = task.copy(isDone = newValue)
+            }
         }
     }
 

@@ -5,4 +5,5 @@
     <color name="status_done_text">#1B5E20</color>
     <color name="status_pending_bg">#FFE0B2</color>
     <color name="status_pending_text">#E65100</color>
+    <color name="swipe_background">#D32F2F</color>
 </resources>

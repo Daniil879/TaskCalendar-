@@ -7,21 +7,30 @@
     <string name="task_status_done">Выполнено</string>
     <string name="task_status_pending">Не выполнено</string>
     <string name="empty_list">Задач пока нет. Нажмите «+», чтобы добавить.</string>
-
     <string name="screen_add_task_title">Новая задача</string>
+    <string name="screen_edit_task_title">Редактировать задачу</string>
+
     <string name="form_title">Заголовок</string>
     <string name="form_description">Описание</string>
     <string name="form_date">Дата (дд.мм.гггг)</string>
     <string name="form_time">Время (чч:мм)</string>
     <string name="form_save">Сохранить</string>
-    <string name="form_error">Заполните хотя бы заголовок и дату</string>
-    <string name="task_saved">Задача сохранена</string>
+    <string name="form_delete">Удалить задачу</string>
 
-    <string name="screen_task_detail_title">Задача</string>
-    <string name="detail_id">ID задачи: %1$d</string>
-    <string name="detail_not_found">Задача не найдена</string>
-    <string name="detail_mark_done">Отметить выполненной</string>
-    <string name="detail_mark_pending">Вернуть в работу</string>
-    <string name="detail_delete">Удалить</string>
-    <string name="back">Назад</string>
+    <string name="error_title_required">Введите заголовок задачи</string>
+    <string name="error_date_required">Выберите дату</string>
+    <string name="error_date_invalid">Некорректная дата</string>
+    <string name="error_time_invalid">Некорректное время</string>
+
+    <string name="task_saved">Задача создана</string>
+    <string name="task_updated">Изменения сохранены</string>
+    <string name="task_deleted">Задача удалена</string>
+    <string name="task_not_found">Задача не найдена — возможно, она уже удалена</string>
+    <string name="delete_confirm_title">Удалить задачу?</string>
+    <string name="delete_confirm_message">Задача «%1$s» будет удалена без возможности восстановления.</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="pick_date">Выбрать дату</string>
+    <string name="pick_time">Выбрать время</string>
 </resources>

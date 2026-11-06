@@ -57,4 +57,6 @@ class TaskAdapter(
         items.addAll(newItems)
         notifyDataSetChanged()
     }
+
+    fun itemAt(position: Int): Task? = items.getOrNull(position)
 }
