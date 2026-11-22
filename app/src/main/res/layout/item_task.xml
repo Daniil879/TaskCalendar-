@@ -30,7 +30,7 @@
             app:layout_constraintEnd_toStartOf="@id/tvTaskStatus"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Сдать отчёт по этапу 1" />
+            tools:text="Сдать отчёт по этапу 6" />
 
         <TextView
             android:id="@+id/tvTaskStatus"
@@ -56,7 +56,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTaskTitle"
-            tools:text="Описать XML-атрибуты и методы жизненного цикла Activity" />
+            tools:text="Календарь + список задач дня" />
 
         <TextView
             android:id="@+id/tvTaskDate"
@@ -68,7 +68,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTaskDescription"
-            tools:text="28.09.2026 · 12:00" />
+            tools:text="22.11.2026 · 12:00" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

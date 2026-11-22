@@ -1,14 +1,22 @@
 package ru.university.taskcalendar.data
+
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
+import ru.university.taskcalendar.util.toIso
+import java.time.LocalDate
+
 class TaskRepository(private val dao: TaskDao) {
+
     val allTasks: Flow<List<Task>> = dao.allTasks()
-        .onEach { Log.d("DB_QUERY", "Запрос в базу: ${it.size} задач") }
+
+    fun observeTasksByDate(dateIso: String): Flow<List<Task>> = dao.observeTasksByDate(dateIso)
+
+    suspend fun getTasksByDate(dateIso: String): List<Task> = dao.getTasksByDate(dateIso)
+
+    fun observeDayCounts(startIso: String, endIso: String): Flow<List<DayTaskCount>> =
+        dao.observeDayCounts(startIso, endIso)
 
     suspend fun getById(id: Long): Task? = dao.getById(id)
-
-    suspend fun getByDate(date: String): List<Task> = dao.getByDate(date)
 
     suspend fun add(task: Task): Long = dao.insert(task)
 
@@ -23,52 +31,57 @@ class TaskRepository(private val dao: TaskDao) {
         if (dao.count() > 0) return
 
         Log.d(TAG, "База пуста — заполняю демо-данными")
-        demo.forEach { dao.insert(it) }
-        Log.d(TAG, "В базе теперь ${dao.count()} задач:")
-        demo.forEach {
-            Log.d(TAG, "  #${it.id} ${it.date} — ${it.title} (done=${it.isDone})")
+
+        val today = LocalDate.now()
+        val demo = listOf(
+            Task(
+                title = "Сдать отчёт по этапу 6",
+                description = "Календарь + список задач дня",
+                date = today.toIso(),
+                time = "12:00"
+            ),
+            Task(
+                title = "Созвон с преподавателем",
+                description = "Показать демо календаря",
+                date = today.toIso(),
+                time = "18:30"
+            ),
+            Task(
+                title = "Спринт-ревью",
+                description = "Обсудить прогресс команды",
+                date = today.plusDays(1).toIso(),
+                time = "10:00"
+            ),
+            Task(
+                title = "Купить продукты",
+                description = "Молоко, хлеб, кофе",
+                date = today.plusDays(3).toIso(),
+                time = "19:00"
+            ),
+            Task(
+                title = "Тренировка",
+                description = "Бассейн, 45 минут",
+                date = today.minusDays(2).toIso(),
+                time = "08:00",
+                isDone = true
+            ),
+            Task(
+                title = "Оплатить интернет",
+                description = "До конца месяца",
+                date = today.plusDays(10).toIso(),
+                time = "09:00"
+            )
+        )
+
+        dao.insertAll(demo)
+
+        Log.d(TAG, "В базе ${dao.count()} задач:")
+        dao.getTasksByDate(today.toIso()).forEach {
+            Log.d(TAG, "  #${it.id} ${it.date} ${it.time} — ${it.title} (done=${it.isDone})")
         }
     }
 
     private companion object {
         const val TAG = "DB_SEED"
-
-        val demo = listOf(
-            Task(
-                id = 1L,
-                title = "Сходить в продуктовый магазин",
-                description = "молоко (2 л), яйца (1 десяток), хлеб цельнозерновой (1 буханка), бананы (1 кг), куриная грудка (500 г), огурцы (3 шт.), гречка (1 упаковка).",
-                date = "28.09.2026",
-                isDone = false
-            ),
-            Task(
-                id = 2L,
-                title = "Забрать заказ из пункта выдачи",
-                description = "заказ №123456, кроссовки и футболка; проверить целостность упаковки и размер при получении.",
-                date = "30.09.2026",
-                isDone = false
-            ),
-            Task(
-                id = 3L,
-                title = "Записаться к стоматологу и подтвердить визит",
-                description = "зайти в приложение клиники, выбрать свободное окно на следующую неделю, записать дату и время в календарь, поставить напоминание за день.",
-                date = "02.10.2026",
-                isDone = true
-            ),
-            Task(
-                id = 4L,
-                title = "Купить канцелярию для работы",
-                description = "блокнот на 96 листов, набор ручек (синяя, чёрная, красная), маркеры-текстовыделители (4 цвета), папка-скоросшиватель, стикеры.",
-                date = "05.10.2026",
-                isDone = false
-            ),
-            Task(
-                id = 5L,
-                title = "Подготовить продукты для ужина",
-                description = "филе лосося (400 г), брокколи (300 г), лимон (1 шт.), оливковое масло, специи. Дома: промыть и обсушить рыбу, нарезать овощи, разложить по контейнерам, чтобы вечером быстро запечь.",
-                date = "07.10.2026",
-                isDone = false
-            )
-        )
     }
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ru.university.taskcalendar.R
 import ru.university.taskcalendar.data.Task
+import ru.university.taskcalendar.util.isoToDisplayOrNull
 
 class TaskAdapter(
     private val onItemClick: (Task) -> Unit
@@ -35,7 +36,10 @@ class TaskAdapter(
 
         holder.title.text = task.title
         holder.description.text = task.description
-        holder.date.text = if (task.time.isBlank()) task.date else "${task.date} · ${task.time}"
+
+
+        val dateText = task.date.isoToDisplayOrNull() ?: task.date
+        holder.date.text = if (task.time.isBlank()) dateText else "$dateText · ${task.time}"
 
         if (task.isDone) {
             holder.status.setText(R.string.task_status_done)

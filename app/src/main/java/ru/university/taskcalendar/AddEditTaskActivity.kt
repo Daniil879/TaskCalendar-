@@ -20,20 +20,25 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import ru.university.taskcalendar.data.Task
 import ru.university.taskcalendar.ui.TaskViewModel
+import ru.university.taskcalendar.util.displayToIsoOrNull
+import ru.university.taskcalendar.util.isoToDisplayOrNull
+import ru.university.taskcalendar.util.parseDisplayDate
+import ru.university.taskcalendar.util.parseIsoDate
+import ru.university.taskcalendar.util.parseTimeOrNull
+import ru.university.taskcalendar.util.toDisplay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 class AddEditTaskActivity : AppCompatActivity() {
 
     private val viewModel: TaskViewModel by viewModels { TaskViewModel.Factory }
 
-    private val taskId: Long by lazy {
-        intent.getLongExtra(EXTRA_TASK_ID, NEW_TASK_ID)
-    }
-
+    private val taskId: Long by lazy { intent.getLongExtra(EXTRA_TASK_ID, NEW_TASK_ID) }
     private val isEditMode: Boolean get() = taskId != NEW_TASK_ID
+
+
+    private val presetDateIso: String? by lazy { intent.getStringExtra(EXTRA_PRESET_DATE) }
 
     private lateinit var tilTitle: TextInputLayout
     private lateinit var tilDate: TextInputLayout
@@ -46,7 +51,6 @@ class AddEditTaskActivity : AppCompatActivity() {
     private lateinit var btnDelete: Button
 
     private var currentTask: Task? = null
-
     private var prefillDone: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +67,9 @@ class AddEditTaskActivity : AppCompatActivity() {
 
         if (isEditMode) {
             viewModel.loadTask(taskId)
+        } else if (savedInstanceState == null) {
+            // Создание из календаря: дата уже выбрана пользователем
+            presetDateIso?.parseIsoDate()?.let { etDate.setText(it.toDisplay()) }
         }
 
         observeTask()
@@ -72,6 +79,7 @@ class AddEditTaskActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_PREFILLED, prefillDone)
     }
+
 
     private fun bindViews() {
         tilTitle = findViewById(R.id.tilTitle)
@@ -93,15 +101,14 @@ class AddEditTaskActivity : AppCompatActivity() {
         )
     }
 
-    private fun setupDateAndTimePickers() {
 
+    private fun setupDateAndTimePickers() {
         etDate.setOnClickListener {
-            val base = parseDate(etDate.text?.toString().orEmpty()) ?: LocalDate.now()
+            val base = etDate.text?.toString().orEmpty().parseDisplayDate() ?: LocalDate.now()
             DatePickerDialog(
                 this,
                 { _, year, month, day ->
-                    val picked = LocalDate.of(year, month + 1, day)
-                    etDate.setText(picked.format(DATE_FORMAT))
+                    etDate.setText(LocalDate.of(year, month + 1, day).toDisplay())
                     tilDate.error = null
                 },
                 base.year,
@@ -111,17 +118,16 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
 
         etTime.setOnClickListener {
-            val base = parseTime(etTime.text?.toString().orEmpty()) ?: LocalTime.now()
+            val base = etTime.text?.toString().orEmpty().parseTimeOrNull() ?: LocalTime.now()
             TimePickerDialog(
                 this,
                 { _, hour, minute ->
-                    val picked = LocalTime.of(hour, minute)
-                    etTime.setText(picked.format(TIME_FORMAT))
+                    etTime.setText(LocalTime.of(hour, minute).format(TIME_FORMAT))
                     tilTime.error = null
                 },
                 base.hour,
                 base.minute,
-                DateFormat.is24HourFormat(this)   // уважаем настройку системы
+                DateFormat.is24HourFormat(this)
             ).show()
         }
     }
@@ -133,6 +139,7 @@ class AddEditTaskActivity : AppCompatActivity() {
             if (etTime.text?.isNotEmpty() == true) tilTime.error = null
         }
     }
+
     private fun validate(): Boolean {
         var valid = true
 
@@ -150,7 +157,7 @@ class AddEditTaskActivity : AppCompatActivity() {
                 tilDate.error = getString(R.string.error_date_required)
                 valid = false
             }
-            parseDate(dateRaw) == null -> {
+            dateRaw.parseDisplayDate() == null -> {
                 tilDate.error = getString(R.string.error_date_invalid)
                 valid = false
             }
@@ -158,7 +165,7 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
 
         val timeRaw = etTime.text?.toString()?.trim().orEmpty()
-        if (timeRaw.isNotEmpty() && parseTime(timeRaw) == null) {
+        if (timeRaw.isNotEmpty() && timeRaw.parseTimeOrNull() == null) {
             tilTime.error = getString(R.string.error_time_invalid)
             valid = false
         } else {
@@ -166,11 +173,12 @@ class AddEditTaskActivity : AppCompatActivity() {
         }
 
         if (!valid) {
-            if (tilTitle.error != null) etTitle.requestFocus()
-            else if (tilDate.error != null) etDate.requestFocus()
-            else etTime.requestFocus()
+            when {
+                tilTitle.error != null -> etTitle.requestFocus()
+                tilDate.error != null -> etDate.requestFocus()
+                else -> etTime.requestFocus()
+            }
         }
-
         return valid
     }
 
@@ -186,8 +194,10 @@ class AddEditTaskActivity : AppCompatActivity() {
 
             val title = etTitle.text?.toString()?.trim().orEmpty()
             val description = etDescription.text?.toString()?.trim().orEmpty()
-            val date = etDate.text?.toString()?.trim().orEmpty()
+            val dateDisplay = etDate.text?.toString()?.trim().orEmpty()
             val time = etTime.text?.toString()?.trim().orEmpty()
+
+            val dateIso = dateDisplay.displayToIsoOrNull() ?: return@setOnClickListener
 
             btnSave.isEnabled = false
 
@@ -202,7 +212,7 @@ class AddEditTaskActivity : AppCompatActivity() {
                     existing.copy(
                         title = title,
                         description = description,
-                        date = date,
+                        date = dateIso,
                         time = time
                     )
                 ) {
@@ -210,7 +220,7 @@ class AddEditTaskActivity : AppCompatActivity() {
                     finish()
                 }
             } else {
-                viewModel.addTask(title, description, date, time) {
+                viewModel.addTask(title, description, dateIso, time) {
                     Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show()
                     finish()
                 }
@@ -233,6 +243,7 @@ class AddEditTaskActivity : AppCompatActivity() {
             .show()
     }
 
+
     private fun observeTask() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -250,28 +261,18 @@ class AddEditTaskActivity : AppCompatActivity() {
     private fun fillForm(task: Task) {
         etTitle.setText(task.title)
         etDescription.setText(task.description)
-        etDate.setText(task.date)
+        etDate.setText(task.date.isoToDisplayOrNull() ?: task.date)
         etTime.setText(task.time)
     }
 
     companion object {
         const val EXTRA_TASK_ID = "extra_task_id"
+        const val EXTRA_PRESET_DATE = "extra_preset_date"
+
         const val NEW_TASK_ID = -1L
 
         private const val STATE_PREFILLED = "state_prefilled"
 
-        private val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         private val TIME_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
-        fun parseDate(raw: String): LocalDate? = try {
-            if (raw.isBlank()) null else LocalDate.parse(raw, DATE_FORMAT)
-        } catch (e: DateTimeParseException) {
-            null
-        }
-        fun parseTime(raw: String): LocalTime? = try {
-            if (raw.isBlank()) null else LocalTime.parse(raw, TIME_FORMAT)
-        } catch (e: DateTimeParseException) {
-            null
-        }
     }
 }

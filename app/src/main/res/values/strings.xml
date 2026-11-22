@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Календарь задач</string>
-    <string name="screen_main_title">Мои задачи</string>
+    <string name="screen_main_title">Календарь</string>
 
     <string name="add_task">Добавить задачу</string>
     <string name="task_status_done">Выполнено</string>
     <string name="task_status_pending">Не выполнено</string>
     <string name="empty_list">Задач пока нет. Нажмите «+», чтобы добавить.</string>
+
+
+    <string name="weekday_mon">Пн</string>
+    <string name="weekday_tue">Вт</string>
+    <string name="weekday_wed">Ср</string>
+    <string name="weekday_thu">Чт</string>
+    <string name="weekday_fri">Пт</string>
+    <string name="weekday_sat">Сб</string>
+    <string name="weekday_sun">Вс</string>
+
+    <string name="calendar_prev_month">Предыдущий месяц</string>
+    <string name="calendar_next_month">Следующий месяц</string>
+    <string name="calendar_today">Сегодня</string>
+    <string name="tasks_on_date">Задачи на %1$s</string>
+    <string name="no_tasks_for_day">На этот день задач нет.\nНажмите «+», чтобы добавить.</string>
+
+
     <string name="screen_add_task_title">Новая задача</string>
     <string name="screen_edit_task_title">Редактировать задачу</string>
 
@@ -26,6 +43,7 @@
     <string name="task_updated">Изменения сохранены</string>
     <string name="task_deleted">Задача удалена</string>
     <string name="task_not_found">Задача не найдена — возможно, она уже удалена</string>
+
     <string name="delete_confirm_title">Удалить задачу?</string>
     <string name="delete_confirm_message">Задача «%1$s» будет удалена без возможности восстановления.</string>
     <string name="delete">Удалить</string>

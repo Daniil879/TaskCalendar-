@@ -6,4 +6,10 @@
     <color name="status_pending_bg">#FFE0B2</color>
     <color name="status_pending_text">#E65100</color>
     <color name="swipe_background">#D32F2F</color>
+
+    <color name="calendar_accent">#7E57C2</color>
+    <color name="calendar_day_text">#212121</color>
+    <color name="calendar_other_month">#BDBDBD</color>
+    <color name="calendar_selected_text">#FFFFFF</color>
+    <color name="divider">#E0E0E0</color>
 </resources>
